@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UIL-GEY 204 – Geomorphology Study Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0f0e17;
+  --paper: #f4f1ec;
+  --gold: #c9a84c;
+  --gold-light: #e8d5a3;
+  --gold-dim: #c9a84c33;
+  --navy: #1a2e1a;
+  --navy-mid: #16311a;
+  --red: #e05c3a;
+  --green: #3a8c5c;
+  --card: #ffffff;
+  --muted: #6b6660;
+  --border: #ddd8d0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--paper); color: var(--ink); line-height: 1.6; min-height: 100vh; }
+header { background: var(--navy); padding: 28px 40px 24px; position: relative; overflow: hidden; }
+header::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 70% 50%, #c9a84c18 0%, transparent 70%); }
+.header-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 20px; position: relative; }
+.header-title h1 { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: #fff; line-height: 1.2; }
+.header-title p { color: var(--gold-light); font-size: 0.85rem; margin-top: 4px; font-weight: 300; }
+.header-stats { display: flex; gap: 16px; }
+.stat-chip { background: #ffffff14; border: 1px solid #ffffff22; border-radius: 8px; padding: 8px 14px; text-align: center; color: #fff; }
+.stat-chip .num { font-size: 1.3rem; font-weight: 700; color: var(--gold); display: block; }
+.stat-chip .lbl { font-size: 0.7rem; opacity: .7; letter-spacing: .05em; text-transform: uppercase; }
+.tab-bar { background: var(--navy-mid); padding: 0 40px; display: flex; gap: 0; overflow-x: auto; scrollbar-width: none; }
+.tab-bar::-webkit-scrollbar { display: none; }
+.tab-btn { padding: 14px 20px; color: #aaa; font-size: 0.83rem; cursor: pointer; border: none; background: none; border-bottom: 3px solid transparent; white-space: nowrap; transition: all .2s; font-family: 'DM Sans', sans-serif; letter-spacing: .03em; }
+.tab-btn:hover { color: var(--gold-light); }
+.tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+.app-body { max-width: 1100px; margin: 0 auto; padding: 28px 24px; }
+.mode-btn { padding: 9px 18px; border-radius: 24px; border: 2px solid var(--border); background: #fff; cursor: pointer; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; color: var(--muted); transition: all .2s; display: flex; align-items: center; gap: 6px; }
+.mode-btn:hover { border-color: var(--gold); color: var(--ink); }
+.mode-btn.active { background: var(--navy); color: var(--gold); border-color: var(--navy); }
+.panel { display: none; }
+.panel.active { display: block; }
+.notes-grid { display: grid; grid-template-columns: 260px 1fr; gap: 24px; min-height: 540px; }
+.topic-list { display: flex; flex-direction: column; gap: 6px; }
+.topic-item { padding: 11px 14px; border-radius: 8px; cursor: pointer; font-size: 0.84rem; border: 1px solid transparent; transition: all .18s; display: flex; align-items: center; gap: 10px; background: #fff; }
+.topic-item:hover { border-color: var(--gold); }
+.topic-item.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+.topic-item .t-num { background: var(--gold-dim); color: var(--gold); border-radius: 4px; font-size: 0.72rem; font-weight: 700; padding: 2px 6px; flex-shrink: 0; }
+.topic-item.active .t-num { background: #ffffff22; color: var(--gold-light); }
+.notes-content { background: #fff; border-radius: 12px; border: 1px solid var(--border); padding: 28px 32px; overflow-y: auto; max-height: 74vh; }
+.notes-content h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 20px; color: var(--navy); padding-bottom: 12px; border-bottom: 2px solid var(--gold-dim); }
+.notes-content h3 { font-size: 0.95rem; font-weight: 700; margin: 18px 0 8px; color: var(--navy); display: flex; align-items: center; gap: 8px; }
+.notes-content h3::before { content: ''; display: inline-block; width: 4px; height: 16px; background: var(--gold); border-radius: 2px; }
+.notes-content p { margin-bottom: 10px; font-size: 0.93rem; color: #333; }
+.notes-content ul { margin: 6px 0 12px 0; list-style: none; }
+.notes-content ul li { padding: 5px 0 5px 20px; font-size: 0.9rem; color: #333; position: relative; border-bottom: 1px dashed #eee; }
+.notes-content ul li:last-child { border-bottom: none; }
+.notes-content ul li::before { content: '→'; color: var(--gold); position: absolute; left: 0; font-size: 0.8rem; }
+.key-box { background: #fffbf0; border: 1px solid var(--gold); border-left: 4px solid var(--gold); border-radius: 6px; padding: 12px 16px; margin: 10px 0; font-size: 0.88rem; }
+.key-box strong { color: #7a5c00; }
+.ai-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--navy); color: var(--gold); border: none; border-radius: 8px; padding: 8px 14px; font-size: 0.8rem; cursor: pointer; margin-top: 16px; font-family: 'DM Sans', sans-serif; transition: opacity .2s; }
+.ai-btn:hover { opacity: .85; }
+.ai-response { background: #f0f4ff; border-left: 3px solid #4a6cf7; border-radius: 8px; padding: 14px 16px; margin-top: 12px; font-size: 0.88rem; line-height: 1.7; display: none; }
+.ai-response.visible { display: block; }
+.quiz-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+.quiz-controls { display: flex; gap: 10px; flex-wrap: wrap; }
+.quiz-select { padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; background: #fff; cursor: pointer; }
+.quiz-start-btn { padding: 9px 22px; background: var(--navy); color: var(--gold); border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; cursor: pointer; transition: opacity .2s; }
+.quiz-start-btn:hover { opacity: .85; }
+.progress-bar-wrap { background: #eee; border-radius: 10px; height: 6px; margin-bottom: 20px; overflow: hidden; }
+.progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--green)); border-radius: 10px; transition: width .4s ease; }
+.q-card { background: #fff; border-radius: 14px; padding: 28px 32px; border: 1px solid var(--border); box-shadow: 0 2px 16px #0000060a; }
+.q-meta { font-size: 0.78rem; color: var(--muted); margin-bottom: 12px; text-transform: uppercase; letter-spacing: .06em; }
+.q-text { font-size: 1.05rem; font-weight: 500; margin-bottom: 22px; line-height: 1.5; color: var(--ink); }
+.options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+.opt-btn { padding: 13px 16px; border: 2px solid var(--border); border-radius: 10px; background: #fafafa; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; text-align: left; transition: all .18s; display: flex; align-items: center; gap: 10px; color: var(--ink); }
+.opt-btn:hover:not(:disabled) { border-color: var(--navy); background: #f0f2ff; }
+.opt-btn .opt-key { min-width: 26px; height: 26px; border-radius: 6px; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 700; }
+.opt-btn.correct { border-color: var(--green); background: #f0fdf4; color: var(--green); }
+.opt-btn.correct .opt-key { background: var(--green); color: #fff; }
+.opt-btn.wrong { border-color: var(--red); background: #fff5f3; color: var(--red); }
+.opt-btn.wrong .opt-key { background: var(--red); color: #fff; }
+.opt-btn:disabled { cursor: default; }
+.q-feedback { font-size: 0.88rem; padding: 10px 14px; border-radius: 8px; margin-bottom: 16px; display: none; }
+.q-feedback.show { display: block; }
+.q-feedback.ok { background: #f0fdf4; color: var(--green); border: 1px solid #bbf7d0; }
+.q-feedback.bad { background: #fff5f3; color: var(--red); border: 1px solid #fecaca; }
+.q-nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.q-nav-btn { padding: 10px 22px; border-radius: 8px; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; transition: all .2s; }
+.q-nav-btn.prev { background: #eee; color: var(--ink); }
+.q-nav-btn.next { background: var(--navy); color: var(--gold); }
+.q-nav-btn:hover:not(:disabled) { opacity: .85; }
+.q-nav-btn:disabled { opacity: .35; cursor: default; }
+.quiz-score-card { background: var(--navy); color: #fff; border-radius: 16px; padding: 40px; text-align: center; display: none; }
+.quiz-score-card.show { display: block; }
+.score-big { font-family: 'Playfair Display', serif; font-size: 4rem; color: var(--gold); line-height: 1; }
+.score-label { color: #aaa; margin-top: 6px; margin-bottom: 24px; }
+.score-grid { display: flex; justify-content: center; gap: 32px; margin-bottom: 28px; }
+.score-item .s-num { font-size: 1.6rem; font-weight: 700; }
+.score-item .s-lbl { font-size: 0.75rem; color: #aaa; text-transform: uppercase; letter-spacing: .06em; }
+.score-correct { color: #6ee7b7; }
+.score-wrong { color: #fca5a5; }
+.retry-btn { padding: 12px 28px; background: var(--gold); color: var(--navy); border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 600; cursor: pointer; }
+.review-wrap { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 24px; margin-top: 24px; }
+.review-wrap h3 { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--red); margin-bottom: 16px; }
+.review-item { border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; background: #fafafa; }
+.review-item .ri-q { font-size: 0.9rem; font-weight: 600; margin-bottom: 8px; }
+.review-item .ri-wrong { color: var(--red); font-size: 0.83rem; }
+.review-item .ri-correct { color: var(--green); font-size: 0.83rem; margin-top: 3px; }
+.flashcard-wrap { perspective: 1000px; margin: 0 auto 24px; max-width: 620px; height: 280px; cursor: pointer; }
+.flashcard { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform .5s ease; }
+.flashcard.flipped { transform: rotateY(180deg); }
+.fc-face { position: absolute; inset: 0; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 32px; backface-visibility: hidden; }
+.fc-front { background: var(--navy); color: #fff; border: 2px solid #ffffff18; }
+.fc-back { background: #fff; border: 2px solid var(--gold); transform: rotateY(180deg); }
+.fc-tag { font-size: 0.72rem; text-transform: uppercase; letter-spacing: .1em; opacity: .55; margin-bottom: 12px; }
+.fc-question { font-size: 1.1rem; font-weight: 500; line-height: 1.5; color: #fff; }
+.fc-answer { font-size: 1rem; color: var(--navy); font-weight: 600; }
+.fc-hint { font-size: 0.78rem; color: var(--gold); margin-top: 14px; }
+.fc-hint-back { font-size: 0.78rem; color: var(--muted); margin-top: 10px; }
+.fc-controls { display: flex; gap: 12px; justify-content: center; align-items: center; max-width: 620px; margin: 0 auto; }
+.fc-btn { flex: 1; padding: 12px; border-radius: 10px; border: none; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; cursor: pointer; transition: all .2s; font-weight: 500; }
+.fc-btn.got-it { background: var(--green); color: #fff; }
+.fc-btn.review { background: #fff3; color: var(--ink); border: 1px solid var(--border); }
+.fc-btn.skip { background: #eee; color: var(--muted); }
+.fc-progress { text-align: center; font-size: 0.8rem; color: var(--muted); margin: 12px 0; }
+.ask-ai-wrap { max-width: 760px; margin: 0 auto; }
+.ask-ai-intro { background: var(--navy); color: #fff; border-radius: 12px; padding: 24px 28px; margin-bottom: 20px; display: flex; gap: 16px; align-items: flex-start; }
+.ask-ai-intro .icon { font-size: 2rem; flex-shrink: 0; }
+.ask-ai-intro h3 { font-family: 'Playfair Display', serif; margin-bottom: 6px; color: var(--gold); }
+.ask-ai-intro p { font-size: 0.88rem; color: #ccc; }
+.quick-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.quick-chip { padding: 7px 14px; border: 1px solid var(--border); border-radius: 20px; font-size: 0.82rem; cursor: pointer; background: #fff; transition: all .18s; color: var(--ink); }
+.quick-chip:hover { background: var(--navy); color: var(--gold); border-color: var(--navy); }
+.chat-box { background: #fff; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+.chat-msgs { padding: 20px; min-height: 200px; max-height: 380px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
+.msg { display: flex; gap: 10px; align-items: flex-start; }
+.msg.user { flex-direction: row-reverse; }
+.msg-avatar { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; }
+.msg.user .msg-avatar { background: var(--navy); color: var(--gold); }
+.msg.ai .msg-avatar { background: var(--gold-dim); color: var(--gold); }
+.msg-bubble { max-width: 80%; padding: 10px 14px; border-radius: 12px; font-size: 0.88rem; line-height: 1.6; }
+.msg.user .msg-bubble { background: var(--navy); color: #fff; border-bottom-right-radius: 4px; }
+.msg.ai .msg-bubble { background: #f7f4ef; color: var(--ink); border-bottom-left-radius: 4px; }
+.chat-input-row { display: flex; border-top: 1px solid var(--border); }
+.chat-input { flex: 1; padding: 14px 18px; border: none; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; background: #fafafa; outline: none; resize: none; }
+.chat-send { padding: 14px 20px; background: var(--navy); color: var(--gold); border: none; cursor: pointer; font-size: 1rem; transition: opacity .2s; }
+.chat-send:hover { opacity: .85; }
+.prog-heading { font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 20px; color: var(--navy); }
+.topic-progress-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+.prog-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; }
+.prog-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.prog-card-name { font-size: 0.88rem; font-weight: 600; color: var(--navy); }
+.prog-card-pct { font-size: 1rem; font-weight: 700; color: var(--gold); }
+.prog-bar-bg { height: 6px; background: #eee; border-radius: 10px; overflow: hidden; margin-bottom: 8px; }
+.prog-bar-fg { height: 100%; background: linear-gradient(90deg, var(--gold), var(--green)); border-radius: 10px; transition: width .6s ease; }
+.prog-card-stats { font-size: 0.75rem; color: var(--muted); }
+.overall-banner { background: var(--navy); color: #fff; border-radius: 14px; padding: 24px 28px; margin-bottom: 24px; display: flex; gap: 32px; align-items: center; }
+.ob-score { font-family: 'Playfair Display', serif; font-size: 2.8rem; color: var(--gold); }
+.ob-label { font-size: 0.8rem; color: #aaa; text-transform: uppercase; letter-spacing: .06em; }
+.ob-divider { width: 1px; background: #fff2; align-self: stretch; }
+.dark-toggle { background: #ffffff18; border: 1px solid #ffffff22; border-radius: 20px; padding: 7px 14px; color: #fff; cursor: pointer; font-size: 0.82rem; font-family: 'DM Sans', sans-serif; display: flex; align-items: center; gap: 6px; transition: background .2s; }
+.dark-toggle:hover { background: #ffffff28; }
+.streak-chip { background: linear-gradient(135deg, #ff9f43, #ee5a24); border-radius: 8px; padding: 8px 14px; text-align: center; color: #fff; }
+.streak-chip .num { font-size: 1.3rem; font-weight: 700; display: block; }
+.streak-chip .lbl { font-size: 0.7rem; opacity: .85; letter-spacing: .05em; text-transform: uppercase; }
+.reset-btn { padding: 10px 20px; background: transparent; color: var(--red); border: 2px solid var(--red); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; cursor: pointer; transition: all .2s; margin-top: 12px; }
+.reset-btn:hover { background: var(--red); color: #fff; }
+.review-btn { padding: 12px 28px; background: transparent; color: var(--gold); border: 2px solid var(--gold); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 600; cursor: pointer; margin-left: 10px; }
+.review-btn:hover { background: var(--gold); color: var(--navy); }
+.pdf-btn { display: inline-flex; align-items: center; gap: 7px; background: var(--red); color: #fff; border: none; border-radius: 8px; padding: 8px 16px; font-size: 0.82rem; cursor: pointer; font-family: 'DM Sans', sans-serif; margin-top: 8px; margin-left: 8px; }
+.badges-section { margin-top: 28px; }
+.badges-section h3 { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--navy); margin-bottom: 14px; }
+.badges-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+.badge-chip { display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 24px; font-size: 0.82rem; font-weight: 600; border: 2px solid; }
+.badge-chip.earned { background: linear-gradient(135deg, #fffbf0, #fef3c7); border-color: var(--gold); color: #7a5c00; }
+.badge-chip.locked { background: #f0eded; border-color: #ddd; color: #aaa; }
+.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid currentColor; border-top-color: transparent; border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.panel.active { animation: fadeIn .3s ease; }
+body.dark { --paper: #0f1a0f; --ink: #e8e4dc; --card: #1a2a1a; --border: #2e3d2e; --muted: #9994a8; background: var(--paper); }
+body.dark .notes-content, body.dark .q-card, body.dark .prog-card, body.dark .topic-item, body.dark .chat-box { background: var(--card); border-color: var(--border); }
+body.dark .notes-content p, body.dark .notes-content li, body.dark .q-text { color: #d0ccca; }
+body.dark .opt-btn { background: var(--card); border-color: var(--border); color: var(--ink); }
+body.dark .fc-back { background: var(--card); }
+body.dark .quiz-select, body.dark .chat-input { background: var(--card); color: var(--ink); border-color: var(--border); }
+body.dark .quick-chip { background: var(--card); color: var(--ink); }
+body.dark .key-box { background: #1c1a10; }
+body.dark .msg.ai .msg-bubble { background: var(--card); }
+body.dark .chat-input { background: var(--card); }
+body.dark .review-wrap, body.dark .review-item { background: var(--card); border-color: var(--border); }
+@media (max-width: 720px) {
+  header { padding: 20px; }
+  .header-inner { flex-direction: column; align-items: flex-start; }
+  .tab-bar { padding: 0 12px; }
+  .app-body { padding: 16px 12px; }
+  .notes-grid { grid-template-columns: 1fr; }
+  .topic-list { flex-direction: row; flex-wrap: wrap; }
+  .options-grid { grid-template-columns: 1fr; }
+  .header-stats { gap: 8px; }
+  .overall-banner { flex-wrap: wrap; gap: 14px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-title">
+      <h1>UIL-GEY 204 — Geomorphology Study Hub</h1>
+      <p>Notes · Quiz · Flashcards · Ask AI · Progress · Badges</p>
+    </div>
+    <div class="header-stats">
+      <div class="streak-chip"><span class="num" id="stat-streak">0</span><span class="lbl">🔥 Streak</span></div>
+      <div class="stat-chip"><span class="num" id="stat-done">0</span><span class="lbl">Answered</span></div>
+      <div class="stat-chip"><span class="num" id="stat-pct">0%</span><span class="lbl">Accuracy</span></div>
+      <div class="stat-chip"><span class="num">200+</span><span class="lbl">Questions</span></div>
+      <button class="dark-toggle" onclick="toggleDark()" id="dark-btn">🌙 Dark</button>
+    </div>
+  </div>
+</header>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('notes')">📖 Notes</button>
+  <button class="tab-btn" onclick="switchTab('quiz')">🧠 Quiz</button>
+  <button class="tab-btn" onclick="switchTab('flash')">🃏 Flashcards</button>
+  <button class="tab-btn" onclick="switchTab('ask')">✨ Ask AI</button>
+  <button class="tab-btn" onclick="switchTab('progress')">📊 Progress</button>
+</div>
+
+<div class="app-body">
+
+<!-- NOTES PANEL -->
+<div class="panel active" id="panel-notes">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+    <span style="font-size:0.82rem;color:var(--muted)">Select a topic to view notes</span>
+    <button class="pdf-btn" onclick="window.print()">📄 Print / Save PDF</button>
+  </div>
+  <div class="notes-grid">
+    <div class="topic-list" id="topic-list"></div>
+    <div class="notes-content" id="notes-content">
+      <p style="color:var(--muted)">Select a topic from the left to view notes.</p>
+    </div>
+  </div>
+</div>
+
+<!-- QUIZ PANEL -->
+<div class="panel" id="panel-quiz">
+  <div class="quiz-header">
+    <div class="quiz-controls">
+      <select class="quiz-select" id="quiz-topic-sel"><option value="all">All Topics</option></select>
+      <select class="quiz-select" id="quiz-count-sel">
+        <option value="10">10 Questions</option>
+        <option value="20">20 Questions</option>
+        <option value="50">50 Questions</option>
+      </select>
+    </div>
+    <button class="quiz-start-btn" onclick="startQuiz()">Start Quiz →</button>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="q-progress" style="width:0%"></div></div>
+  <div class="q-card" id="q-card" style="display:none">
+    <div class="q-meta" id="q-meta"></div>
+    <div class="q-text" id="q-text"></div>
+    <div class="options-grid" id="options-grid"></div>
+    <div class="q-feedback" id="q-feedback"></div>
+    <div class="q-nav">
+      <button class="q-nav-btn prev" id="q-prev" onclick="moveQ(-1)">← Prev</button>
+      <span id="q-counter" style="font-size:.85rem;color:var(--muted)"></span>
+      <button class="q-nav-btn next" id="q-next" onclick="moveQ(1)">Next →</button>
+    </div>
+  </div>
+  <div class="quiz-score-card" id="score-card">
+    <div class="score-big" id="score-pct"></div>
+    <div class="score-label">Quiz Complete!</div>
+    <div class="score-grid">
+      <div class="score-item"><div class="s-num score-correct" id="sc-correct"></div><div class="s-lbl">Correct</div></div>
+      <div class="score-item"><div class="s-num score-wrong" id="sc-wrong"></div><div class="s-lbl">Wrong</div></div>
+    </div>
+    <button class="retry-btn" onclick="startQuiz()">Try Again</button>
+    <button class="review-btn" onclick="showWrongReview()" id="review-btn" style="display:none">📋 Review Mistakes</button>
+  </div>
+  <div id="wrong-review" class="review-wrap" style="display:none">
+    <h3>❌ Questions You Got Wrong</h3>
+    <div id="wrong-list"></div>
+  </div>
+  <div id="quiz-start-msg" style="text-align:center;padding:60px 20px;color:var(--muted)">
+    <div style="font-size:3rem;margin-bottom:12px">🌍</div>
+    <p>Choose your topic and question count, then hit <strong>Start Quiz</strong>.</p>
+  </div>
+</div>
+
+<!-- FLASHCARDS PANEL -->
+<div class="panel" id="panel-flash">
+  <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+    <select class="quiz-select" id="fc-topic-sel" onchange="setFCTopicSel(this.value)">
+      <option value="all">All Topics</option>
+    </select>
+    <button class="fc-btn skip" style="flex:none;padding:8px 16px" onclick="fcShuffle()">🔀 Shuffle</button>
+  </div>
+  <div class="fc-progress" id="fc-progress">Card 1 of 0</div>
+  <div class="flashcard-wrap" onclick="flipCard()">
+    <div class="flashcard" id="flashcard">
+      <div class="fc-face fc-front">
+        <div class="fc-tag">Question</div>
+        <div class="fc-question" id="fc-q">Loading…</div>
+        <div class="fc-hint">Tap to reveal answer</div>
+      </div>
+      <div class="fc-face fc-back">
+        <div class="fc-tag">Answer</div>
+        <div class="fc-answer" id="fc-a"></div>
+        <div class="fc-hint-back">← Tap to flip back</div>
+      </div>
+    </div>
+  </div>
+  <div class="fc-controls">
+    <button class="fc-btn review" onclick="fcNext(-1)">← Back</button>
+    <button class="fc-btn got-it" onclick="fcNext(1)">Next →</button>
+  </div>
+</div>
+
+<!-- ASK AI PANEL -->
+<div class="panel" id="panel-ask">
+  <div class="ask-ai-wrap">
+    <div class="ask-ai-intro">
+      <div class="icon">🌍</div>
+      <div>
+        <h3>Ask the Geomorphology Tutor</h3>
+        <p>Ask anything about UIL-GEY 204 — weathering, erosion, rivers, earthquakes, or landforms. The AI knows your course material.</p>
+      </div>
+    </div>
+    <div class="quick-chips">
+      <span class="quick-chip" onclick="quickAsk(this)">What is geomorphology?</span>
+      <span class="quick-chip" onclick="quickAsk(this)">Explain the three types of weathering</span>
+      <span class="quick-chip" onclick="quickAsk(this)">Difference between eluvium and deluvium</span>
+      <span class="quick-chip" onclick="quickAsk(this)">What are the methods of sediment transportation?</span>
+      <span class="quick-chip" onclick="quickAsk(this)">Explain the rock cycle</span>
+      <span class="quick-chip" onclick="quickAsk(this)">What causes gully erosion?</span>
+      <span class="quick-chip" onclick="quickAsk(this)">What is a water divide?</span>
+      <span class="quick-chip" onclick="quickAsk(this)">Quiz me on river deposits</span>
+    </div>
+    <div class="chat-box">
+      <div class="chat-msgs" id="chat-msgs">
+        <div class="msg ai">
+          <div class="msg-avatar">🪨</div>
+          <div class="msg-bubble">Hello! I'm your UIL-GEY 204 Geomorphology tutor. Ask me anything about the shape and processes of the Earth's surface — weathering, erosion, rivers, earthquakes, and more! 🌍</div>
+        </div>
+      </div>
+      <div class="chat-input-row">
+        <textarea class="chat-input" id="chat-input" placeholder="Ask a geomorphology question…" rows="1" onkeydown="chatEnter(event)"></textarea>
+        <button class="chat-send" onclick="sendChat()">➤</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROGRESS PANEL -->
+<div class="panel" id="panel-progress">
+  <div class="overall-banner">
+    <div><div class="ob-label">Overall Score</div><div class="ob-score" id="ob-score">—</div></div>
+    <div class="ob-divider"></div>
+    <div><div class="ob-label">Questions Answered</div><div class="ob-score" id="ob-answered">0</div></div>
+    <div class="ob-divider"></div>
+    <div><div class="ob-label">Correct</div><div class="ob-score" style="color:#6ee7b7" id="ob-correct">0</div></div>
+    <div class="ob-divider"></div>
+    <div><div class="ob-label">🔥 Best Streak</div><div class="ob-score" style="color:#ff9f43" id="ob-streak">0</div></div>
+  </div>
+  <div class="prog-heading">Per-Topic Breakdown</div>
+  <div class="topic-progress-grid" id="prog-grid"></div>
+  <div class="badges-section">
+    <h3>🏅 Achievements</h3>
+    <div class="badges-grid" id="badges-grid"></div>
+  </div>
+  <button class="reset-btn" onclick="resetProgress()">🗑 Reset All Progress</button>
+</div>
+
+</div>
+
+<script>
+// ══════════ COURSE DATA ══════════
+const COURSE_SYSTEM = `You are an expert university tutor for UIL-GEY 204 Geomorphology at the University of Ilorin, Nigeria. 
+You help students understand the physical environment, rock types, weathering processes, erosion, sediment transport, fluvial processes, and geomorphological features.
+Key topics: definition of geomorphology, rock cycle, types of rocks, weathering (physical/chemical/biological), factors controlling weathering, products of weathering (eluvium/deluvium), 
+methods of sediment transport (suspension/saltation/traction), erosion types (wind/river/soil/gully), gully erosion causes and control, streams and rivers, fluvial processes, 
+river deposits (alluvial fans, flood plains, deltas), earthquakes, volcanoes, landslides, orogeny.
+Answer concisely, use examples, and relate to the course notes. If asked to quiz, provide MCQ questions.`;
+
+const TOPICS = [
+  { id:'t1', title:'Introduction to Geomorphology' },
+  { id:'t2', title:'Rocks & the Rock Cycle' },
+  { id:'t3', title:'Weathering — Types & Processes' },
+  { id:'t4', title:'Factors Controlling Weathering' },
+  { id:'t5', title:'Products & Transport of Sediments' },
+  { id:'t6', title:'Erosion — Types & Causes' },
+  { id:'t7', title:'Gully Erosion — Causes & Control' },
+  { id:'t8', title:'Streams & River Systems' },
+  { id:'t9', title:'Fluvial Processes & River Deposits' },
+  { id:'t10', title:'Earthquakes & Volcanoes' },
+  { id:'t11', title:'Geomorphological Factors' },
+];
+
+const NOTES = {
+  t1: {
+    heading: 'Introduction to Geomorphology',
+    sections: [
+      { h: 'What is Geomorphology?', body: `
+        <p>The word <strong>Geomorphology</strong> is derived from two Greek words: <em>Geo</em> (Earth) and <em>Morpho</em> (shape, settings, arrangement).</p>
+        <div class="key-box"><strong>Definition:</strong> Geomorphology is the study of the nature and origin of land forms, particularly of the degradative processes of weathering and erosion that occur in the atmosphere and hydrosphere.</div>
+        <p>The physical environment of an area is as important as the people living within it. Our physical environment contains features which are products of natural and human activities — such features are hills, valleys, plains, swamps, etc.</p>
+      `},
+      { h: 'Physical Environment Features', body: `
+        <ul>
+          <li>Hills, valleys, plains, swamps</li>
+          <li>Rivers and streams</li>
+          <li>Volcanoes and earthquake zones</li>
+          <li>Coastal features</li>
+        </ul>
+      `},
+    ]
+  },
+  t2: {
+    heading: 'Rocks & the Rock Cycle',
+    sections: [
+      { h: 'What is a Rock?', body: `
+        <div class="key-box"><strong>Definition:</strong> A rock is a naturally formed, consolidated material usually composed of grains of one or more minerals.</div>
+      `},
+      { h: 'Three Types of Rocks', body: `
+        <ul>
+          <li><strong>Igneous Rocks</strong> — formed from cooled magma (e.g., granite, basalt)</li>
+          <li><strong>Sedimentary Rocks</strong> — formed from compacted sediments (e.g., sandstone, limestone)</li>
+          <li><strong>Metamorphic Rocks</strong> — formed by heat and pressure transforming existing rocks (e.g., marble, slate)</li>
+        </ul>
+      `},
+      { h: 'The Rock Cycle', body: `
+        <p>Earth changes because of its internal and external heat engines, causing rocks to change due to weathering, erosion, temperature, gravity and other external and internal forces.</p>
+        <div class="key-box"><strong>Rock Cycle:</strong> The processes whereby one kind of rock will be changed to another kind of rock. The changing relationships between the three rock types can be visualised with the aid of the rock cycle.</div>
+      `},
+      { h: 'Rock Type Components', body: `
+        <p>Each rock type is composed of a particular set of minerals which are joined together by crystallisation, chemical bonding, and cementation. The nature of the crystals, their chemical bonding and cementing nature can determine how rocks respond to weathering activities.</p>
+      `},
+    ]
+  },
+  t3: {
+    heading: 'Weathering — Types & Processes',
+    sections: [
+      { h: 'What is Weathering?', body: `
+        <div class="key-box"><strong>Definition:</strong> Weathering refers to the processes that change the physical and chemical characteristics of the rocks on the earth surface. It can also be defined as the loosening and breaking down of the materials of the earth's crust.</div>
+        <p>Rocks exposed at the surface of the earth are subjected to direct and indirect attacks of natural agencies such as atmospheric gases, heat, moisture, wind, ice, sea-water, and surface water.</p>
+      `},
+      { h: 'Three Types of Weathering', body: `
+        <ul>
+          <li><strong>Physical / Mechanical Weathering</strong> — disintegration by mechanical means</li>
+          <li><strong>Chemical Weathering</strong> — decomposition by chemical reactions</li>
+          <li><strong>Biological Weathering</strong> — disintegration by micro-organisms and plants</li>
+        </ul>
+      `},
+      { h: '1. Physical / Mechanical Weathering', body: `
+        <p>This simply implies the disintegration of the rocks by mechanical means. In this case, there is always a physical disintegration in which the rocks break into smaller pieces. In Mechanical Weathering, the change in the rock is always visible/physical. There is little or no chemical change in the chemical composition of the rock.</p>
+        <div class="key-box"><strong>Examples of Mechanical Weathering:</strong> Thermal expansion and contraction · Mechanical Exfoliation · Frost Wedging · Rock Abrasion by wind, water and plant growth</div>
+      `},
+      { h: '2. Chemical Weathering', body: `
+        <p>This implies the decomposition of the rock due to its exposure to active water and atmospheric gases. The atmospheric gases responsible for chemical weathering include CO₂ (Carbon dioxide), O₂ (oxygen), Hydrogen, Nitrogen, and Water Vapour.</p>
+        <p>In Chemical Weathering, not only the physical form of the rock would be affected, it also affects the chemical composition of the rock minerals.</p>
+        <div class="key-box"><strong>Examples of Chemical Weathering:</strong> Oxidation and Reduction · Carbonation · Solution · Hydration and Hydrolysis</div>
+      `},
+      { h: '3. Biological Weathering', body: `
+        <p>This involves the actions of micro-organisms and plants on the rocks to further disintegrate the rocks into smaller sizes.</p>
+      `},
+    ]
+  },
+  t4: {
+    heading: 'Factors Controlling Weathering',
+    sections: [
+      { h: 'Overview', body: `
+        <p>Several factors determine the type and rate of weathering that occurs on a rock. The key factors are:</p>
+      `},
+      { h: '1. Climatic Changes (Action of Sun, Rain — Thermal Expansion and Contraction)', body: `
+        <p>Climate dictates the type of weathering processes that operates on the rock. It determines the amount of water available in the rocks and the temperature at which the weathering process can occur.</p>
+        <ul>
+          <li>Chemical reactions are faster in higher temperatures</li>
+          <li>Frost Wedging is common in colder climatic conditions</li>
+          <li>Rainfall intensity and duration affect weathering rate</li>
+          <li>High intensity rainfall increases the rate of disaggregation</li>
+        </ul>
+      `},
+      { h: '2. Topography / Gradient', body: `
+        <p>The slope angle determines the energy of the weathering system, by controlling the rate at which water passes through the rock masses. Generally, Tectonically active areas with steeper slopes have more dynamic weathering systems. Whereas, the flat or plane lands would have slower weathering systems.</p>
+      `},
+      { h: '3. Rock Structure', body: `
+        <p>Rocks that are highly jointed / faulted would present many planes of weakness along which chemically active water (which is an agent of weathering) can penetrate.</p>
+      `},
+      { h: '4. Rock Types (Igneous, Sedimentary and Metamorphic)', body: `
+        <p>Rock types determine the resistance of the rock to the weathering processes. Each rock type is composed of a particular set of minerals which are joined together by crystallisation, chemical bonding and cementation. The stronger the bonds, the stronger the rock.</p>
+        <ul>
+          <li>Areas with high inter-granular binding forces will NOT be highly affected by gully erosion</li>
+          <li>Areas with weak inter-granular binding forces WILL be highly susceptible to gully erosion</li>
+        </ul>
+      `},
+    ]
+  },
+  t5: {
+    heading: 'Products of Weathering & Sediment Transport',
+    sections: [
+      { h: 'Products of Weathering', body: `
+        <p>The products of weathering are commonly classified into two main types:</p>
+        <ul>
+          <li><strong>Eluvium</strong> — the end product of weathering that happens to lie above and over the parent rock (e.g., Rhyolite)</li>
+          <li><strong>Deluvium</strong> — that category of the end product of weathering that has been moved to some distance after its formation due to weathering processes</li>
+        </ul>
+      `},
+      { h: 'Methods of Transportation of Sediments', body: `
+        <div class="key-box"><strong>Three Methods:</strong> Suspension · Saltation · Traction</div>
+      `},
+      { h: '1. Suspension Method', body: `
+        <p>This is a method of transportation of light/density sediment like clay and silt. In this method, the agent of transportation (wind or water) can just transport the sediment to a certain distance and drop it. When it gathers energy/momentum again, it would carry the sediment again to another distance.</p>
+      `},
+      { h: '2. Saltation Method', body: `
+        <p>This method of transportation of sediment is characterised by lifting off the grains of sediment by turbulent water or wind. This method is used in transportation of heavier or coarser sediment like sand grains, pebbles and gravels. The sediments are lifted up periodically during the high velocity times, but the movement is for small distances. This is a method of transportation of sediment in a series of jumps.</p>
+      `},
+      { h: '3. Traction Method', body: `
+        <p>This is simply the method of transportation by rolling, sliding, or dragging. This method is peculiar in the transportation of heavy/large particles of sediment such as boulders.</p>
+      `},
+    ]
+  },
+  t6: {
+    heading: 'Erosion — Types & Causes',
+    sections: [
+      { h: 'What is Erosion?', body: `
+        <div class="key-box"><strong>Definition:</strong> Erosion is the picking up or physical removal of rock particles by agents of erosion such as wind, glaciers and water.</div>
+      `},
+      { h: 'Three Types of Erosion', body: `
+        <ul>
+          <li><strong>Wind Erosion</strong></li>
+          <li><strong>River / Stream Erosion</strong></li>
+          <li><strong>Soil Erosion</strong> (which includes gully erosion)</li>
+        </ul>
+      `},
+      { h: '1. Wind Erosion', body: `
+        <p>This is generally less significant; it is normally seen in the desert region (Arid region). In wind erosion, the wind picks up the lighter component of the soil such as clays, silts and organic matter and transports them kilometres away.</p>
+      `},
+      { h: '2. River / Stream Erosion', body: `
+        <p>This type of erosion occurs mainly in the river or stream. In this case, the river erodes the river channel/stream channel. So as it erodes the channel, it equally erodes the rocks on the channel and transports the eroded rocks in form of sediment.</p>
+      `},
+      { h: '3. Soil Erosion', body: `
+        <p>In soil erosion, we have rill, sheet and gully erosion. But as a geologist, our major interest is in gully erosion — the extreme type of soil erosion.</p>
+      `},
+    ]
+  },
+  t7: {
+    heading: 'Gully Erosion — Causes & Control',
+    sections: [
+      { h: 'What is Gully Erosion?', body: `
+        <div class="key-box">Gully erosion is the extreme type of soil erosion.</div>
+      `},
+      { h: 'Causes of Gully Erosion', body: `
+        <p><strong>Natural Causes:</strong></p>
+        <ul>
+          <li><strong>Topography / Gradient</strong> — Flow is always associated with a gradient. The higher the gradient, the greater the flow velocity; the greater the flow velocity, the greater the hydraulic force of water to detach the rock unit</li>
+          <li><strong>Rainfall</strong> — Rainfall duration, intensity and rain drop energy all influence which rate of disaggregation increases as rainfall increases with high intensity and high rain drop energy</li>
+          <li><strong>Geology of the Area</strong> — The nature of the inter-granular binding forces holding the rocks unit in the affected areas is the most important factor</li>
+        </ul>
+        <p><strong>Man-made / Anthropogenic Causes:</strong></p>
+        <ul>
+          <li><strong>Urbanisation</strong> — Cutting down trees to build houses and industries exposes the soil to direct impact of rain drop energy</li>
+          <li><strong>Agricultural Practices</strong> — Bush burning, overgrazing, excessive tilling of the soil</li>
+          <li><strong>Improper Channelling of Floods</strong> — If flood is not properly channelled it would help build a high hydrologic force of water which can detach the rock units</li>
+          <li><strong>Multi-channelling of Flood Water</strong> — Distributing channels evenly helps reduce flow velocity</li>
+        </ul>
+      `},
+      { h: 'Control Measures for Natural Factors', body: `
+        <ul>
+          <li><strong>Topography</strong> — Can be modified by man (slope stabilisation by reducing the slope angle during road construction)</li>
+          <li><strong>Geology / Nature of the rock unit</strong> — Artificial cementation can be applied where rock units are loose or have excessive permeability</li>
+          <li><strong>Rainfall</strong> — There is no remedy</li>
+        </ul>
+      `},
+      { h: 'Control Measures for Man-made Causes', body: `
+        <ul>
+          <li>Slope Stabilisation by reducing the slope angle during road construction</li>
+          <li>The use of Rip-Raps</li>
+          <li>The use of Vegetation control (using bamboo, cashew) — reduces the run-off water flow rate</li>
+          <li>The use of Catch-pits</li>
+          <li>Chiselling the slope faces</li>
+          <li>Planting of grasses on the slope faces</li>
+        </ul>
+      `},
+    ]
+  },
+  t8: {
+    heading: 'Streams & River Systems',
+    sections: [
+      { h: 'What is a Stream?', body: `
+        <div class="key-box"><strong>Definition:</strong> A stream is defined as the body of moving water that is confined in a channel that moves downhill under the influence of gravity.</div>
+      `},
+      { h: 'Types of Stream', body: `
+        <ul>
+          <li><strong>Effluent Stream</strong> — The type of stream that gives out water under the influence of gravity and velocity</li>
+          <li><strong>Influent Stream</strong> — A type of stream that receives water from a smaller stream. It is always in a depression and forms like a lake. Its rate of flow is slow when compared with the Effluent</li>
+        </ul>
+      `},
+      { h: 'Water Divide', body: `
+        <div class="key-box"><strong>Water Divide:</strong> A water divide is a ridge or area of high ground between two river basins.</div>
+      `},
+      { h: 'Catchment Area', body: `
+        <p>The catchment area is an area that is drained by a single river.</p>
+      `},
+      { h: 'Orogeny', body: `
+        <p><strong>Orogeny</strong> implies the process of mountain building.</p>
+      `},
+      { h: 'Inlier vs. Outlier', body: `
+        <ul>
+          <li><strong>Inlier</strong> — An inlier simply implies a rock that is completely surrounded by other younger rocks</li>
+          <li><strong>Outlier</strong> — This is an outcrop of rocks which is completely surrounded by an older rocks</li>
+        </ul>
+      `},
+      { h: 'A Valley', body: `
+        <p>A Valley is a surface of depression on the earth's surface that is bounded by hills or mountains. There are various shapes of a valley:</p>
+        <ul>
+          <li>V-Shapes</li>
+          <li>U-Shapes</li>
+          <li>Truncated Shapes</li>
+          <li>Tributary Valley</li>
+          <li>Hanging Valley</li>
+        </ul>
+      `},
+    ]
+  },
+  t9: {
+    heading: 'Fluvial Processes & River Deposits',
+    sections: [
+      { h: 'Fluvial Processes', body: `
+        <div class="key-box"><strong>Fluvial Processes</strong> simply implies all the processes of the earth surface that originated from the action of sea/river.</div>
+        <p>A stream flows in a well-defined channel developed and modified by the cutter itself. The highland or mountainous region where the river actually originates is called the <strong>Head region</strong>. At the highland, the river or stream can be said to be at its <strong>Youthful Stage</strong>.</p>
+        <p>From the head region the river flows through gradually decreasing slopes and then flows to a nearly flat region before it gets to the mouth of the stream — this is called the <strong>Maturity Stage</strong>. The place where a river enters a bigger river or sea is called the <strong>Mouth</strong> — at that stage it is known as the <strong>Old Stage / Last Stage</strong>.</p>
+      `},
+      { h: 'Geological Work of a River', body: `
+        <p>During the flow of the river, the river would be capable of modifying the topography through which it passes — this action is known as the <strong>Geological Work of a River</strong>.</p>
+        <p>The geological work of a river can be divided into 3 phases:</p>
+        <ul>
+          <li><strong>River Erosion</strong></li>
+          <li><strong>River Transportation</strong></li>
+          <li><strong>River Deposits</strong></li>
+        </ul>
+      `},
+      { h: 'River Erosion (3 Ways)', body: `
+        <ul>
+          <li><strong>Hydraulic Action</strong> — Mechanical loosening and removal of material from rocks due to pressure exerted by running water</li>
+          <li><strong>Abrasion</strong> — The principal method of stream erosion; wearing away of bed rocks and other rocks along the banks of the river or stream with the help of sand grains, pebbles and gravels</li>
+          <li><strong>Corrosion</strong> — A slow but steady chemical action of the stream water on the rocks. Not all rocks are equally susceptible to corrosive action</li>
+        </ul>
+        <div class="key-box">Limestone, Gypsum, and rock salt bodies are soluble in water but the stream water may hardly corrode Sandstone, Quartzite, Granite and Gneiss.</div>
+      `},
+      { h: 'River Deposits', body: `
+        <ul>
+          <li><strong>Alluvial Fans / Alluvial Cones</strong> — Cone-shaped accumulation of stream deposits commonly found at places where small streams coming from downhill down from a hillslope enters a low land</li>
+          <li><strong>Flood Plains</strong> — When a river overflows its banks and the water spreads over a vast area on its sides; flood water are heavily loaded with sediments of all types; during the overflowing, it spreads these sediments and deposits them on their adjoining lands surrounding the river</li>
+          <li><strong>Deltas</strong> — Alluvial deposits of triangular shape deposited at the mouth of a river where it enters a bigger river or the sea</li>
+          <li><strong>Channel Deposits</strong> — Many streams/rivers are natural causes of some deposits; examples are sands and gravels used in engineering constructions</li>
+        </ul>
+      `},
+      { h: 'Effects of Rivers on the Earth\'s Crust', body: `
+        <ul>
+          <li>It brings about erosion of the banks</li>
+          <li>It helps in rock weathering which in turn helps in modifying the land forms</li>
+          <li>It helps in the transportation of sediments</li>
+          <li>It helps in the recharge of the ground water</li>
+        </ul>
+      `},
+    ]
+  },
+  t10: {
+    heading: 'Earthquakes & Volcanoes',
+    sections: [
+      { h: 'Volcanoes', body: `
+        <div class="key-box"><strong>Volcanoes</strong> are land forms created due to the escape of magma from the earth's interior through an opening called a vent.</div>
+        <p><strong>Volcanic Rocks</strong> — The magma that erupts during the volcanic eruption would solidify on the surface of the earth forming a volcanic rocks.</p>
+      `},
+      { h: 'Effects of Volcanism on the Earth\'s Surface', body: `
+        <ul>
+          <li>It can lead to Air pollution</li>
+          <li>It can lead to the formation of volcanic rocks</li>
+          <li>It can lead to changes in the earth forms/earth changes</li>
+          <li>It can lead to water pollution especially when the volcanic eruption occurs in an ocean</li>
+          <li>It can also trigger an earthquake</li>
+        </ul>
+      `},
+      { h: 'What is an Earthquake?', body: `
+        <div class="key-box"><strong>Earthquake:</strong> The vibration of the earth produced when the rocks are suddenly disturbed. It can also be defined as the concept of vibrations produced when the rocks are suddenly disturbed.</div>
+      `},
+      { h: 'Types of Earthquakes', body: `
+        <p><strong>Tectonic Earthquakes</strong> — The type of earthquakes caused by tectonic activities such as faulting or relative displacement of a rock in the earth's crust. Divided into 3:</p>
+        <ul>
+          <li><strong>Shallow earthquake</strong> — depth of origin is less than 60–70 km</li>
+          <li><strong>Intermediate earthquake</strong> — depth of origin is between 60 km and (deeper)</li>
+          <li><strong>Deep earthquake</strong> — depth of origin is about 730 km</li>
+        </ul>
+        <p><strong>Volcanic Earthquakes</strong> — Caused by volcanic activity.</p>
+      `},
+      { h: 'Effects of Earthquake on the Earth\'s Surface', body: `
+        <ul>
+          <li>It can change the geo-morphology of the land form</li>
+          <li>It can lead to reduction in agricultural output</li>
+          <li>It can lead to infrastructural decay</li>
+          <li>It can lead to loss of life</li>
+          <li>It can result to landslides</li>
+          <li>It can lead to rise and fall of water bodies</li>
+        </ul>
+      `},
+    ]
+  },
+  t11: {
+    heading: 'Geomorphological Factors & Landslides',
+    sections: [
+      { h: 'Various Factors Contributing to Geomorphological Variations', body: `
+        <ul>
+          <li><strong>Volcanism</strong> — Movement of hot magma from magma chamber below the earth surface to the surface</li>
+          <li><strong>Weathering</strong> — Another factor that contributes to geo-morphological variations</li>
+          <li><strong>Erosion</strong></li>
+          <li><strong>Landslides</strong> — One of the factors responsible for geomorphological variations</li>
+        </ul>
+      `},
+      { h: 'Landslides', body: `
+        <div class="key-box">Landslides are natural slopes that are controlled by gravity.</div>
+      `},
+      { h: 'Man-made Slopes', body: `
+        <p>These are some man-made slopes created by man which can also help in the changing of the morphology of the earth. These man-made slopes can be created as a result of bad civil-engineering construction, mining of one mineral or another, sand mining. As a result of these mentioned above, unprotected slopes can be created which can trigger gully erosion, thereby disarranging the original form of the earth.</p>
+      `},
+      { h: 'River Geological Terms', body: `
+        <ul>
+          <li><strong>River Channel</strong> — Every river has a well-defined path of its own within the boundary of which the river flows; known as the Course of a River. It may be straight or curved. Every channel has its banks. When the river overflows its banks, it is in its Flood Stage; within its banks = Banks Full Stage</li>
+          <li><strong>Velocity of the River</strong> — The distance the water travels in unit time within the channel; depends on shape, gradient, and volume of water</li>
+          <li><strong>Gradient of the River</strong> — The vertical fall in the stream distance as represented in the descent of a stream</li>
+          <li><strong>Discharge</strong> — The volume of water that passes at a given point in the channel in a given time; a function of cross-sectional area and flow velocity</li>
+          <li><strong>Competence</strong> — The capacity of a river to transport a material; represented by the largest size of particle that can be transported at a given velocity</li>
+        </ul>
+      `},
+      { h: 'Types of Flow of a River', body: `
+        <ul>
+          <li><strong>Laminar Flow</strong> — When the river moves in an undisturbed manner</li>
+          <li><strong>Turbulent Flow</strong> — When the water of the river moves in an irregular pattern (involving a lot of disturbances from the base to the top)</li>
+        </ul>
+      `},
+    ]
+  },
+};
+
+// MCQ BANK
+const MCQ = {
+  t1: [
+    {q:"The word 'Geomorphology' is derived from which language?",o:["Latin","Greek","Arabic","Hebrew"],a:1},
+    {q:"'Geo' in Greek means:",o:["Shape","Earth","Water","Stone"],a:1},
+    {q:"'Morpho' in Greek means:",o:["Earth","River","Shape, settings, arrangement","Erosion"],a:2},
+    {q:"Geomorphology can be defined as the study of:",o:["Chemical composition of rocks","Nature and origin of land forms","Atmospheric pressure","Biological organisms"],a:1},
+    {q:"Which of these is NOT a feature of the physical environment?",o:["Hills","Valleys","Population density","Plains"],a:2},
+    {q:"The physical environment of an area includes:",o:["Only human settlements","Hills, valleys, plains, swamps, rivers","Only water bodies","Only mountainous terrain"],a:1},
+    {q:"Geomorphology focuses particularly on which processes?",o:["Agricultural and industrial","Degradative processes of weathering and erosion","Climate prediction","Plate tectonics only"],a:1},
+    {q:"The physical environment contains features that are products of:",o:["Human activities only","Natural activities only","Both natural and human activities","Neither natural nor human activities"],a:2},
+    {q:"Which process is NOT studied in Geomorphology?",o:["Weathering","Erosion","Photosynthesis","Landform origin"],a:2},
+    {q:"Which statement best defines Geomorphology?",o:["Study of rocks only","Study of shape, settings and arrangement of earth forms and degradative processes","Study of weather patterns","Study of plant growth"],a:1},
+  ],
+  t2: [
+    {q:"A rock is defined as:",o:["An artificial material","A naturally formed consolidated material usually composed of grains of minerals","A single mineral crystal","A man-made construction material"],a:1},
+    {q:"How many major types of rocks are there?",o:["Two","Three","Four","Five"],a:1},
+    {q:"Igneous rocks are formed from:",o:["Compacted sediments","Cooled and solidified magma","Heat and pressure on existing rocks","Wind-deposited materials"],a:1},
+    {q:"Sedimentary rocks are formed from:",o:["Magma","Heat and pressure","Compacted sediments","Volcanic lava"],a:2},
+    {q:"Metamorphic rocks are formed by:",o:["Cooling of magma","Compaction of sediments","Heat and pressure transforming existing rocks","Wind erosion"],a:2},
+    {q:"The Rock Cycle shows:",o:["How rocks are mined","The processes whereby one kind of rock changes to another","How rocks grow","The age of the Earth"],a:1},
+    {q:"Granite is an example of which rock type?",o:["Sedimentary","Metamorphic","Igneous","Alluvial"],a:2},
+    {q:"Limestone is an example of which rock type?",o:["Igneous","Metamorphic","Sedimentary","Volcanic"],a:2},
+    {q:"Marble is an example of which rock type?",o:["Igneous","Sedimentary","Metamorphic","Alluvial"],a:2},
+    {q:"The minerals in a rock are joined together by:",o:["Only crystallisation","Crystallisation, chemical bonding and cementation","Only cementation","Only chemical bonding"],a:1},
+    {q:"What determines how rocks respond to weathering?",o:["Their colour","Their age","The nature of crystals, chemical bonding and cementing nature","Their weight"],a:2},
+    {q:"Earth changes because of its:",o:["Orbital speed","Internal and external heat engines","Magnetic field only","Atmospheric pressure"],a:1},
+  ],
+  t3: [
+    {q:"Weathering refers to processes that change the characteristics of rocks on:",o:["The ocean floor","The earth surface","The atmosphere","Underground caves"],a:1},
+    {q:"Rocks exposed at the earth's surface are subjected to attacks of natural agencies such as:",o:["Human settlement","Atmospheric gases, heat, moisture, wind, ice","Only rainfall","Only wind"],a:1},
+    {q:"Which is NOT a type of weathering?",o:["Physical/Mechanical","Chemical","Biological","Hydraulic"],a:3},
+    {q:"Physical weathering involves:",o:["Chemical decomposition","Disintegration by mechanical means","Biological action","Dissolution in water"],a:1},
+    {q:"In mechanical weathering, the change in rock is:",o:["Chemical only","Not visible","Always visible/physical","Biological"],a:2},
+    {q:"Chemical weathering involves:",o:["Only breaking rocks physically","Decomposition due to exposure to active water and atmospheric gases","Only biological action","Only mechanical abrasion"],a:1},
+    {q:"Which gas is responsible for carbonation in chemical weathering?",o:["Oxygen (O₂)","Carbon dioxide (CO₂)","Nitrogen","Hydrogen"],a:1},
+    {q:"Frost Wedging is an example of:",o:["Chemical weathering","Biological weathering","Physical/Mechanical weathering","Corrosion"],a:2},
+    {q:"Oxidation is an example of:",o:["Physical weathering","Biological weathering","Chemical weathering","Mechanical weathering"],a:2},
+    {q:"Biological weathering involves the actions of:",o:["Wind and water","Micro-organisms and plants","Frost and ice","Chemical gases"],a:1},
+    {q:"In chemical weathering, the atmospheric gases responsible include:",o:["CO₂, O₂, Hydrogen, Nitrogen, Water Vapour","Only CO₂","Only water vapour","Only oxygen"],a:0},
+    {q:"Hydrolysis is an example of:",o:["Physical weathering","Biological weathering","Chemical weathering","Frost weathering"],a:2},
+    {q:"Thermal expansion and contraction is an example of:",o:["Chemical weathering","Biological weathering","Mechanical/Physical weathering","Corrosion"],a:2},
+    {q:"Mechanical Exfoliation is associated with which type of weathering?",o:["Chemical","Biological","Physical/Mechanical","Hydraulic"],a:2},
+    {q:"Solution as a weathering process is an example of:",o:["Physical weathering","Biological weathering","Chemical weathering","Thermal weathering"],a:2},
+  ],
+  t4: [
+    {q:"Which factor dictates the type of weathering processes that operate on a rock?",o:["Rock colour","Climatic conditions","Human activity","Altitude alone"],a:1},
+    {q:"Chemical reactions in weathering are faster in:",o:["Colder temperatures","Higher temperatures","Constant temperature","Darkness"],a:1},
+    {q:"Frost Wedging is most common in:",o:["Hot tropical conditions","Colder climatic conditions","Desert regions","Deep oceans"],a:1},
+    {q:"The slope angle determines the energy of the weathering system in relation to:",o:["Rock colour","Topography / gradient","Rock age","Rainfall"],a:1},
+    {q:"Areas with steeper slopes generally have:",o:["Slower weathering systems","More dynamic weathering systems","No weathering at all","Only chemical weathering"],a:1},
+    {q:"Rocks that are highly jointed or faulted present:",o:["Greater resistance to weathering","Many planes of weakness for weathering agents to penetrate","No effect on weathering","Only physical weathering"],a:1},
+    {q:"The stronger the inter-granular bonds of a rock, the:",o:["Weaker the rock","Stronger the rock and more resistant to weathering","Less susceptible to chemical weathering","More it is prone to gully erosion"],a:1},
+    {q:"High intensity rainfall increases the rate of:",o:["Rock formation","Disaggregation (weathering)","Rock hardening","Mineral crystallisation"],a:1},
+    {q:"Which factor controlling weathering has 'no remedy' for gully erosion control?",o:["Geology","Topography","Rainfall","Human activity"],a:2},
+    {q:"Flat or plane lands would have which type of weathering system?",o:["More dynamic","Faster","Slower","No weathering"],a:2},
+  ],
+  t5: [
+    {q:"Eluvium is the end product of weathering that:",o:["Has been transported far from its origin","Lies above and over the parent rock","Is found in river deltas","Is formed by chemical weathering only"],a:1},
+    {q:"Deluvium is:",o:["The end product of weathering lying above the parent rock","The end product of weathering that has been moved some distance after formation","A type of igneous rock","A form of chemical weathering"],a:1},
+    {q:"How many methods of sediment transportation are there?",o:["Two","Three","Four","Five"],a:1},
+    {q:"The Suspension method is used for:",o:["Heavy boulders","Sand grains and pebbles","Light/density sediments like clay and silt","All sediment sizes equally"],a:2},
+    {q:"The Saltation method is characterised by:",o:["Dragging heavy boulders","Rolling sediments along the bottom","Lifting grains off the ground by turbulent water or wind in a series of jumps","Keeping sediment permanently suspended"],a:2},
+    {q:"The Traction method involves:",o:["Suspension of light particles","Saltation jumps","Rolling, sliding, or dragging of heavy particles","Chemical dissolution"],a:2},
+    {q:"Which method of transport is used for boulders?",o:["Suspension","Saltation","Traction","Diffusion"],a:2},
+    {q:"Which method of transport is used for sand grains and pebbles?",o:["Suspension","Saltation","Traction","Osmosis"],a:1},
+    {q:"Saltation transport moves sediment:",o:["Continuously without stopping","In a series of jumps for small distances","By rolling only","By suspension only"],a:1},
+    {q:"The agent of transportation in the Suspension method can be:",o:["Only water","Only wind","Wind or water","Only glaciers"],a:2},
+  ],
+  t6: [
+    {q:"Erosion is defined as:",o:["The breaking down of rocks by chemical processes","The picking up or physical removal of rock particles by agents of erosion","The deposition of sediments","The process of rock formation"],a:1},
+    {q:"Which are the three main types of erosion?",o:["Chemical, physical, biological","Wind, River/Stream, Soil erosion","Suspension, saltation, traction","Laminar, turbulent, fluid"],a:1},
+    {q:"Wind erosion is generally:",o:["Most significant erosion type","Less significant; normally seen in desert/arid regions","Most common in wet tropical areas","The same as river erosion"],a:1},
+    {q:"In wind erosion, the wind picks up:",o:["Heavy boulders","The lighter components — clays, silts and organic matter","Only sand grains","Only rocks"],a:1},
+    {q:"River erosion occurs mainly:",o:["On dry land","In the river or stream channel","In desert regions","In urban areas"],a:1},
+    {q:"In soil erosion, the extreme type is:",o:["Rill erosion","Sheet erosion","Gully erosion","Surface erosion"],a:2},
+    {q:"What does a river transport after eroding its channel?",o:["Only water","Eroded rocks in the form of sediment","Only chemical compounds","Only gases"],a:1},
+    {q:"Agents of erosion include:",o:["Only wind","Wind, glaciers and water","Only water","Only chemical reactions"],a:1},
+    {q:"Sheet erosion is a type of:",o:["Wind erosion","River erosion","Soil erosion","Gully erosion"],a:2},
+    {q:"Rill erosion is a type of:",o:["Wind erosion","River erosion","Soil erosion","Volcanic erosion"],a:2},
+  ],
+  t7: [
+    {q:"Gully erosion is described as:",o:["The mildest form of soil erosion","The extreme type of soil erosion","A type of wind erosion","A type of river erosion"],a:1},
+    {q:"The higher the topographic gradient, the:",o:["Slower the flow velocity","Greater the flow velocity and hydraulic force","Weaker the weathering","Less the erosion"],a:1},
+    {q:"The most important natural factor for gully erosion is:",o:["Rainfall only","Topography only","The nature of inter-granular binding forces of rocks","Wind direction"],a:2},
+    {q:"Areas with HIGH inter-granular binding forces:",o:["Will be highly affected by gully erosion","Will NOT be highly affected by gully erosion","Have no resistance to erosion","Are more prone to wind erosion"],a:1},
+    {q:"Cutting down trees to build houses is an example of which cause of gully erosion?",o:["Rainfall","Geology","Urbanisation","Topography"],a:2},
+    {q:"Bush burning and overgrazing are examples of which anthropogenic cause of gully erosion?",o:["Urbanisation","Agricultural practices","Improper channelling","Road construction"],a:1},
+    {q:"Improper channelling of floods causes gully erosion by:",o:["Reducing water velocity","Building a high hydrologic force of water that detaches rock units","Absorbing water into the soil","Reducing rainfall"],a:1},
+    {q:"Using Rip-Raps is a control measure for:",o:["Natural gully erosion causes","Man-made gully erosion causes","Chemical weathering","Wind erosion"],a:1},
+    {q:"Vegetation control using bamboo and cashew helps by:",o:["Absorbing chemical weathering","Reducing the run-off water flow rate and velocity","Increasing rainfall","Hardening rock units"],a:1},
+    {q:"For the rainfall factor in gully erosion control, what is the correct statement?",o:["It can be fully controlled","Artificial cementation can help","There is no remedy","Slope modification helps"],a:2},
+    {q:"Artificial cementation is applied as a control measure for which factor?",o:["Rainfall","Geology/Nature of the rock unit","Topography","Urbanisation"],a:1},
+    {q:"Slope stabilisation by reducing slope angle is a control for:",o:["Rainfall factor","Geology factor","Topography factor","Agricultural causes"],a:2},
+    {q:"Multi-channelling of flood water helps by:",o:["Increasing flow velocity","Reducing the flow velocity so rate of removal is minimal","Concentrating water in one channel","Preventing all erosion"],a:1},
+    {q:"Catch-pits are used as a control measure for:",o:["Wind erosion","Gully erosion","Volcanic eruption","Chemical weathering"],a:1},
+    {q:"Which of the following is NOT an anthropogenic cause of gully erosion?",o:["Urbanisation","Agricultural practices","Rainfall","Improper channelling of floods"],a:2},
+  ],
+  t8: [
+    {q:"A stream is defined as:",o:["A still body of water","A body of moving water confined in a channel moving downhill under gravity","A lake formed by rainfall","An underground water body"],a:1},
+    {q:"An Effluent stream is one that:",o:["Receives water from smaller streams","Gives out water under influence of gravity and velocity","Is always slow-moving","Forms in a depression like a lake"],a:1},
+    {q:"An Influent stream is one that:",o:["Gives out water","Always flows rapidly","Receives water from a smaller stream and is always in a depression","Never receives water"],a:2},
+    {q:"A Water Divide is:",o:["A dam built on a river","A ridge or area of high ground between two river basins","A type of water erosion","A flood plain"],a:1},
+    {q:"A Catchment Area is:",o:["The flood zone of a river","An area drained by a single river","The deepest part of a river","A water divide"],a:1},
+    {q:"Orogeny refers to:",o:["River erosion processes","The process of mountain building","Sediment transportation","Earthquake causes"],a:1},
+    {q:"An Inlier is:",o:["An outcrop surrounded by older rocks","A rock completely surrounded by other younger rocks","A type of valley","A water divide"],a:1},
+    {q:"An Outlier is:",o:["A rock completely surrounded by older rocks","A rock surrounded by younger rocks","A type of river deposit","A volcanic landform"],a:0},
+    {q:"A Valley is:",o:["A high mountain ridge","A surface of depression on the earth's surface bounded by hills or mountains","A type of river deposit","A water divide"],a:1},
+    {q:"Which is NOT a shape of a valley?",o:["V-shape","U-shape","Truncated shape","Circular shape"],a:3},
+    {q:"The rate of flow of an Influent stream compared to an Effluent stream is:",o:["Faster","The same","Slower","Variable"],a:2},
+    {q:"Hanging Valley is a type of:",o:["Water divide","River deposit","Valley shape","Catchment area"],a:2},
+  ],
+  t9: [
+    {q:"Fluvial Processes refers to all processes originated from the action of:",o:["Wind and ice","Sea/river","Volcanic activity","Human construction"],a:1},
+    {q:"The highland region where a river originates is called:",o:["The Mouth","The Maturity Stage","The Head Region","The Old Stage"],a:2},
+    {q:"At the Head region, the river is at its:",o:["Old Stage","Maturity Stage","Youthful Stage","Dead Stage"],a:2},
+    {q:"The nearly flat region near the river mouth is the:",o:["Youthful Stage","Maturity Stage of the river","Old Stage","Delta Stage"],a:1},
+    {q:"The Old Stage of a river is at:",o:["The head region","The mountain region","The mouth where it enters a bigger river or sea","The middle course"],a:2},
+    {q:"How many phases is the geological work of a river divided into?",o:["Two","Three","Four","Five"],a:1},
+    {q:"Hydraulic Action in river erosion involves:",o:["Chemical dissolution of rocks","Mechanical loosening by pressure of running water","Abrasion by sediment particles","Biological weathering"],a:1},
+    {q:"Abrasion in river erosion is described as:",o:["The chemical action on rocks","The principal method of stream erosion by wearing away rocks with sand, pebbles, gravels","Mechanical loosening by water pressure","Dissolved chemical action"],a:1},
+    {q:"Corrosion in river erosion is:",o:["Mechanical abrasion","A slow but steady chemical action of stream water on rocks","Hydraulic pressure","Physical breaking"],a:1},
+    {q:"Which rocks are largely soluble and easily corroded by stream water?",o:["Granite and Quartzite","Sandstone and Gneiss","Limestone, Gypsum, and rock salt","Basalt and marble"],a:2},
+    {q:"Alluvial Fans are found at places where:",o:["Rivers enter the sea","Small streams coming downhill from a hillslope enter a low land","Rivers overflow their banks","Gully erosion occurs"],a:1},
+    {q:"Flood Plains are formed when:",o:["A river erodes its bed","A river overflows its banks spreading sediment over vast adjacent areas","A delta forms at the river mouth","A stream begins at its head region"],a:1},
+    {q:"Deltas are:",o:["Cone-shaped deposits at hill bases","V-shaped valleys","Alluvial deposits of triangular shape at the mouth of a river","Flood plains"],a:2},
+    {q:"Channel Deposits include:",o:["Deltas and flood plains","Sands and gravels of economic importance for engineering","Alluvial fans only","Volcanic rocks"],a:1},
+    {q:"Which type of river flow moves in an undisturbed manner?",o:["Turbulent Flow","Chaotic Flow","Laminar Flow","Hydraulic Flow"],a:2},
+    {q:"Turbulent Flow is when river water:",o:["Moves smoothly in one direction","Moves in an irregular pattern with disturbances from base to top","Has stopped flowing","Flows only at the surface"],a:1},
+  ],
+  t10: [
+    {q:"Volcanoes are land forms created due to:",o:["Earthquake vibrations","The escape of magma through an opening called a vent","River erosion","Glacier movement"],a:1},
+    {q:"A Vent in volcanic terms is:",o:["A type of earthquake","The opening through which magma escapes","A type of river","A metamorphic rock"],a:1},
+    {q:"Volcanic Rocks are formed when:",o:["Magma cools deep underground","Magma erupts and solidifies on the surface of the earth","Sediments are compacted","Rivers deposit sediments"],a:1},
+    {q:"An earthquake is defined as:",o:["The movement of tectonic plates only","The vibration of the earth produced when rocks are suddenly disturbed","A volcanic eruption","A landslide"],a:1},
+    {q:"How many types of Tectonic Earthquakes are there?",o:["Two","Three","Four","Five"],a:1},
+    {q:"A Shallow Earthquake has a depth of origin:",o:["Greater than 300 km","Between 100 and 200 km","Less than 60–70 km","Exactly 730 km"],a:2},
+    {q:"A Deep Earthquake has a depth of origin of about:",o:["60 km","150 km","730 km","30 km"],a:2},
+    {q:"Volcanic Earthquakes are caused by:",o:["Faulting","Tectonic plate movements","Volcanic activity","River erosion"],a:2},
+    {q:"Tectonic Earthquakes are caused by:",o:["Volcanic eruptions","Landslides","Faulting or relative displacement of rock in the earth's crust","Chemical weathering"],a:2},
+    {q:"Which effect of earthquakes involves the change in landforms?",o:["Air pollution","It can change the geo-morphology of the land form","Water pollution","Loss of vegetation"],a:1},
+    {q:"Volcanism can trigger:",o:["Only air pollution","Earthquakes","Only rock formation","Only water pollution"],a:1},
+    {q:"Which is NOT a listed effect of volcanism on earth's surface?",o:["Air pollution","Formation of volcanic rocks","Changes in earth forms","Formation of river deltas"],a:3},
+    {q:"Which is NOT a listed effect of earthquakes?",o:["Reduction in agricultural output","Formation of volcanic rocks","Infrastructural decay","Landslides"],a:1},
+    {q:"Earthquakes can lead to rise and fall of:",o:["Mountains only","Air pressure","Water bodies","Volcanic vents"],a:2},
+  ],
+  t11: [
+    {q:"Landslides are:",o:["Man-made constructions","Natural slopes controlled by gravity","A type of earthquake","A volcanic landform"],a:1},
+    {q:"Man-made slopes can trigger:",o:["Only air pollution","Gully erosion by disarranging the original form of the earth","Only water pollution","Chemical weathering only"],a:1},
+    {q:"Man-made slopes can result from:",o:["Only rainfall","Bad civil engineering, mining, sand mining","Only natural processes","Volcanic activity only"],a:1},
+    {q:"Discharge is defined as:",o:["The distance water travels in unit time","The velocity of river water","The volume of water that passes at a given point in a given time","The slope of a river"],a:2},
+    {q:"Competence of a river refers to:",o:["The depth of the river","The capacity of the river to transport material (largest particle at given velocity)","The discharge of the river","The gradient of the river"],a:1},
+    {q:"The Gradient of a river is:",o:["The velocity of water","The volume passing a point","The vertical fall in the stream distance","The width of the channel"],a:2},
+    {q:"Velocity of a river depends on:",o:["Only gradient","Shape, gradient, and volume of water in the channel","Only the depth","Only rainfall"],a:1},
+    {q:"Laminar Flow is when the river moves:",o:["In an irregular pattern","In an undisturbed manner","With high turbulence","Only at the surface"],a:1},
+    {q:"Turbulent Flow involves:",o:["Smooth undisturbed motion","Irregular pattern with disturbances from base to top","Only surface movement","Very slow movement"],a:1},
+    {q:"The Banks Full Stage of a river is when:",o:["The river overflows its banks","The river is within its banks","The river is dry","The river flows rapidly"],a:1},
+    {q:"The Flood Stage of a river is when:",o:["The river is within its banks","The river overflows its banks","The river stops flowing","The river forms a delta"],a:1},
+    {q:"Which factor contributing to geomorphological variations involves the movement of hot magma?",o:["Weathering","Erosion","Volcanism","Landslides"],a:2},
+    {q:"Orogeny is the process of:",o:["River erosion","Mountain building","Sediment transport","Gully formation"],a:1},
+    {q:"Which valley shape is associated with glacial action?",o:["V-shape","U-shape","Truncated shape","Circular shape"],a:1},
+    {q:"An Influent stream is always found:",o:["On mountain tops","In a depression (forms like a lake)","At a water divide","At a river delta"],a:1},
+  ],
+};
+
+const FLASHCARDS = [
+  {t:'t1', q:'Define Geomorphology.', a:'The study of nature and origin of land forms, particularly degradative processes of weathering and erosion in the atmosphere and hydrosphere.'},
+  {t:'t1', q:'What does "Geo" and "Morpho" mean in Greek?', a:'"Geo" = Earth; "Morpho" = shape, settings, arrangement.'},
+  {t:'t2', q:'Define a rock.', a:'A naturally formed consolidated material usually composed of grains of one or more minerals.'},
+  {t:'t2', q:'Name the three types of rocks.', a:'Igneous (from magma) · Sedimentary (from compacted sediments) · Metamorphic (from heat and pressure)'},
+  {t:'t2', q:'What does the Rock Cycle show?', a:'The processes whereby one kind of rock changes to another. The changing relationships between rock types.'},
+  {t:'t3', q:'Define Weathering.', a:'The processes that change the physical and chemical characteristics of rocks on the earth surface. Loosening and breaking down of materials of the earth\'s crust.'},
+  {t:'t3', q:'Name the three types of weathering.', a:'Physical/Mechanical · Chemical · Biological'},
+  {t:'t3', q:'Give examples of mechanical weathering.', a:'Thermal expansion and contraction · Mechanical Exfoliation · Frost Wedging · Rock Abrasion by wind/water/plant growth'},
+  {t:'t3', q:'Give examples of chemical weathering.', a:'Oxidation and Reduction · Carbonation · Solution · Hydration and Hydrolysis'},
+  {t:'t3', q:'What gases are responsible for chemical weathering?', a:'CO₂ (Carbon dioxide), O₂ (Oxygen), Hydrogen, Nitrogen, Water Vapour'},
+  {t:'t4', q:'Name 4 factors controlling weathering.', a:'1. Climatic changes · 2. Topography/Gradient · 3. Rock Structure · 4. Rock Types'},
+  {t:'t4', q:'How does climate affect weathering?', a:'Chemical reactions are faster in higher temperatures; frost wedging is common in colder climates; rainfall intensity affects disaggregation rate.'},
+  {t:'t5', q:'What is Eluvium?', a:'The end product of weathering that lies above and over the parent rock.'},
+  {t:'t5', q:'What is Deluvium?', a:'The end product of weathering that has been moved to some distance after its formation due to weathering processes.'},
+  {t:'t5', q:'Name the three methods of sediment transportation.', a:'1. Suspension (light particles — clay, silt) · 2. Saltation (medium — sand, pebbles; series of jumps) · 3. Traction (heavy — boulders; rolling/dragging)'},
+  {t:'t6', q:'Define Erosion.', a:'The picking up or physical removal of rock particles by agents of erosion such as wind, glaciers and water.'},
+  {t:'t6', q:'Name the three types of erosion.', a:'Wind Erosion · River/Stream Erosion · Soil Erosion (including gully erosion)'},
+  {t:'t7', q:'What is Gully Erosion?', a:'The extreme type of soil erosion.'},
+  {t:'t7', q:'Name natural causes of gully erosion.', a:'Topography/Gradient · Rainfall · Geology/Nature of inter-granular binding forces'},
+  {t:'t7', q:'Name man-made causes of gully erosion.', a:'Urbanisation (deforestation) · Agricultural practices (bush burning, overgrazing) · Improper channelling of floods · Multi-channelling of flood water'},
+  {t:'t7', q:'Name control measures for man-made gully erosion.', a:'Slope stabilisation · Rip-Raps · Vegetation control (bamboo, cashew) · Catch-pits · Chiselling slope faces · Planting grasses'},
+  {t:'t8', q:'Define a Stream.', a:'A body of moving water confined in a channel that moves downhill under the influence of gravity.'},
+  {t:'t8', q:'Difference between Effluent and Influent streams?', a:'Effluent: gives out water (faster). Influent: receives water from smaller stream, always in a depression like a lake (slower).'},
+  {t:'t8', q:'What is a Water Divide?', a:'A ridge or area of high ground between two river basins.'},
+  {t:'t8', q:'What is Orogeny?', a:'The process of mountain building.'},
+  {t:'t9', q:'Name the three geological works of a river.', a:'River Erosion · River Transportation · River Deposits'},
+  {t:'t9', q:'Name the three stages of a river.', a:'Youthful Stage (head/highland) · Maturity Stage (decreasing slopes) · Old Stage (mouth/flat)'},
+  {t:'t9', q:'Name the three processes of river erosion.', a:'Hydraulic Action (mechanical pressure) · Abrasion (wearing away with sand/pebbles) · Corrosion (chemical action)'},
+  {t:'t9', q:'Name four types of river deposits.', a:'Alluvial Fans · Flood Plains · Deltas · Channel Deposits (sand and gravel)'},
+  {t:'t10', q:'Define a Volcano.', a:'A land form created due to escape of magma from the earth\'s interior through an opening called a vent.'},
+  {t:'t10', q:'Define an Earthquake.', a:'Vibration of the earth produced when the rocks are suddenly disturbed.'},
+  {t:'t10', q:'Name the two main types of earthquakes.', a:'Tectonic Earthquakes (3 sub-types: shallow/intermediate/deep) · Volcanic Earthquakes'},
+  {t:'t10', q:'What is a Shallow Earthquake?', a:'Depth of origin is less than 60–70 km.'},
+  {t:'t11', q:'Name four factors contributing to geomorphological variations.', a:'Volcanism · Weathering · Erosion · Landslides'},
+  {t:'t11', q:'What is Discharge in river terms?', a:'The volume of water passing at a given point in a given time — a function of cross-sectional area and flow velocity.'},
+  {t:'t11', q:'What is Competence of a river?', a:'The capacity of a river to transport material — represented by the largest particle that can be transported at a given velocity.'},
+  {t:'t11', q:'Difference between Laminar and Turbulent flow?', a:'Laminar: undisturbed, smooth flow. Turbulent: irregular pattern with disturbances from base to top.'},
+];
+
+// ══════════ STATE ══════════
+let currentTopic = 't1';
+let quizQuestions = [];
+let quizIdx = 0;
+let quizAnswered = {};
+let quizWrong = [];
+let fcIdx = 0;
+let fcPool = [...FLASHCARDS];
+let fcFlipped = false;
+let chatHistory = [];
+let totalAnswered = 0, totalCorrect = 0;
+let topicStats = {};
+TOPICS.forEach(t => topicStats[t.id] = {answered:0, correct:0});
+let currentStreak = 0, bestStreak = 0;
+let darkMode = false;
+
+// ══════════ INIT ══════════
+window.onload = () => {
+  buildTopicList();
+  buildTopicSelects();
+  showNotes('t1');
+  initFlashcards();
+  renderProgress();
+};
+
+function buildTopicList() {
+  const list = document.getElementById('topic-list');
+  list.innerHTML = TOPICS.map(t => `
+    <div class="topic-item ${t.id === currentTopic ? 'active' : ''}" id="titem-${t.id}" onclick="showNotes('${t.id}')">
+      <span class="t-num">${t.id.replace('t','')}</span>${t.title}
+    </div>
+  `).join('');
+}
+
+function buildTopicSelects() {
+  const quizSel = document.getElementById('quiz-topic-sel');
+  const fcSel = document.getElementById('fc-topic-sel');
+  TOPICS.forEach(t => {
+    quizSel.innerHTML += `<option value="${t.id}">${t.title}</option>`;
+    fcSel.innerHTML += `<option value="${t.id}">${t.title}</option>`;
+  });
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+function showNotes(id) {
+  currentTopic = id;
+  document.querySelectorAll('.topic-item').forEach(el => el.classList.remove('active'));
+  const ti = document.getElementById('titem-'+id);
+  if(ti) ti.classList.add('active');
+  const data = NOTES[id];
+  if(!data) return;
+  const nc = document.getElementById('notes-content');
+  nc.innerHTML = `<h2>${data.heading}</h2>` + data.sections.map(s => `
+    <h3>${s.h}</h3>${s.body}
+  `).join('');
+}
+
+// QUIZ
+function startQuiz() {
+  const topicVal = document.getElementById('quiz-topic-sel').value;
+  const count = parseInt(document.getElementById('quiz-count-sel').value);
+  let pool = [];
+  if(topicVal === 'all') {
+    TOPICS.forEach(t => { if(MCQ[t.id]) pool.push(...MCQ[t.id].map(q => ({...q, topic:t.id, topicTitle:t.title}))); });
+  } else {
+    const t = TOPICS.find(x => x.id === topicVal);
+    pool = (MCQ[topicVal]||[]).map(q => ({...q, topic:topicVal, topicTitle:t.title}));
+  }
+  pool = shuffle(pool).slice(0, Math.min(count, pool.length));
+  quizQuestions = pool;
+  quizIdx = 0;
+  quizAnswered = {};
+  quizWrong = [];
+  document.getElementById('quiz-start-msg').style.display = 'none';
+  document.getElementById('score-card').classList.remove('show');
+  document.getElementById('wrong-review').style.display = 'none';
+  document.getElementById('q-card').style.display = 'block';
+  renderQuestion();
+}
+
+function renderQuestion() {
+  if(quizIdx >= quizQuestions.length) { showScore(); return; }
+  const q = quizQuestions[quizIdx];
+  const pct = ((quizIdx)/quizQuestions.length*100);
+  document.getElementById('q-progress').style.width = pct+'%';
+  document.getElementById('q-meta').textContent = `Topic: ${q.topicTitle} · Question ${quizIdx+1} of ${quizQuestions.length}`;
+  document.getElementById('q-text').textContent = q.q;
+  const keys = ['A','B','C','D'];
+  document.getElementById('options-grid').innerHTML = q.o.map((opt,i) => `
+    <button class="opt-btn" id="opt-${i}" onclick="answerQ(${i})">
+      <span class="opt-key">${keys[i]}</span>${opt}
+    </button>
+  `).join('');
+  const fb = document.getElementById('q-feedback');
+  fb.className = 'q-feedback';
+  fb.textContent = '';
+  if(quizAnswered[quizIdx] !== undefined) highlightAnswer(quizAnswered[quizIdx], q.a);
+  document.getElementById('q-prev').disabled = quizIdx === 0;
+  document.getElementById('q-next').disabled = quizAnswered[quizIdx] === undefined;
+  document.getElementById('q-counter').textContent = `${quizIdx+1} / ${quizQuestions.length}`;
+}
+
+function answerQ(chosen) {
+  if(quizAnswered[quizIdx] !== undefined) return;
+  const q = quizQuestions[quizIdx];
+  quizAnswered[quizIdx] = chosen;
+  const correct = chosen === q.a;
+  totalAnswered++;
+  topicStats[q.topic].answered++;
+  if(correct) {
+    totalCorrect++;
+    topicStats[q.topic].correct++;
+    currentStreak++;
+    if(currentStreak > bestStreak) bestStreak = currentStreak;
+  } else {
+    currentStreak = 0;
+    quizWrong.push({q: q.q, wrong: q.o[chosen], correct: q.o[q.a], topic: q.topicTitle});
+  }
+  highlightAnswer(chosen, q.a);
+  showFeedback(correct);
+  document.getElementById('q-next').disabled = false;
+  updateHeaderStats();
+  renderProgress();
+}
+
+function highlightAnswer(chosen, correct) {
+  document.querySelectorAll('.opt-btn').forEach((btn, i) => {
+    btn.disabled = true;
+    if(i === correct) btn.classList.add('correct');
+    else if(i === chosen && chosen !== correct) btn.classList.add('wrong');
+  });
+}
+
+function showFeedback(correct) {
+  const fb = document.getElementById('q-feedback');
+  fb.className = 'q-feedback show ' + (correct ? 'ok' : 'bad');
+  fb.textContent = correct ? '✓ Correct!' : '✗ Incorrect — check the correct answer above.';
+}
+
+function moveQ(dir) {
+  quizIdx += dir;
+  if(quizIdx < 0) quizIdx = 0;
+  if(quizIdx >= quizQuestions.length) { showScore(); return; }
+  renderQuestion();
+}
+
+function showScore() {
+  document.getElementById('q-card').style.display = 'none';
+  const correct = Object.entries(quizAnswered).filter(([i,a]) => quizQuestions[i] && quizQuestions[i].a === a).length;
+  const total = quizQuestions.length;
+  const pct = total ? Math.round(correct/total*100) : 0;
+  document.getElementById('score-pct').textContent = pct+'%';
+  document.getElementById('sc-correct').textContent = correct;
+  document.getElementById('sc-wrong').textContent = total - correct;
+  document.getElementById('score-card').classList.add('show');
+  document.getElementById('q-progress').style.width = '100%';
+  const rb = document.getElementById('review-btn');
+  rb.style.display = quizWrong.length > 0 ? 'inline-block' : 'none';
+}
+
+function showWrongReview() {
+  const wrap = document.getElementById('wrong-review');
+  wrap.style.display = 'block';
+  document.getElementById('wrong-list').innerHTML = quizWrong.map(w => `
+    <div class="review-item">
+      <div class="ri-q">${w.q}</div>
+      <div class="ri-wrong">✗ You answered: ${w.wrong}</div>
+      <div class="ri-correct">✓ Correct: ${w.correct}</div>
+    </div>
+  `).join('');
+}
+
+// FLASHCARDS
+function initFlashcards() { fcPool = shuffle([...FLASHCARDS]); fcIdx = 0; renderFC(); }
+function setFCTopicSel(val) {
+  fcPool = val === 'all' ? shuffle([...FLASHCARDS]) : shuffle(FLASHCARDS.filter(f => f.t === val));
+  fcIdx = 0;
+  renderFC();
+}
+function renderFC() {
+  if(!fcPool.length) return;
+  const card = fcPool[fcIdx % fcPool.length];
+  document.getElementById('fc-q').textContent = card.q;
+  document.getElementById('fc-a').textContent = card.a;
+  document.getElementById('fc-progress').textContent = `Card ${(fcIdx%fcPool.length)+1} of ${fcPool.length}`;
+  const fc = document.getElementById('flashcard');
+  fc.classList.remove('flipped');
+  fcFlipped = false;
+}
+function flipCard() {
+  fcFlipped = !fcFlipped;
+  document.getElementById('flashcard').classList.toggle('flipped', fcFlipped);
+}
+function fcNext(dir) {
+  fcIdx = (fcIdx + dir + fcPool.length) % fcPool.length;
+  renderFC();
+}
+function fcShuffle() { fcPool = shuffle([...fcPool]); fcIdx = 0; renderFC(); }
+
+// ASK AI
+function quickAsk(el) {
+  document.getElementById('chat-input').value = el.textContent;
+  sendChat();
+}
+function chatEnter(e) {
+  if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
+}
+
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if(!text) return;
+  input.value = '';
+  appendMsg('user', text);
+  const id = 'ai-' + Date.now();
+  appendMsg('ai', '<span class="spinner"></span> Thinking…', id);
+  chatHistory.push({role:'user', content: text});
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system: COURSE_SYSTEM,
+        messages: chatHistory
+      })
+    });
+    const data = await res.json();
+    const reply = data.content?.map(c => c.text||'').join('') || 'Sorry, I could not get a response.';
+    chatHistory.push({role:'assistant', content: reply});
+    updateMsg(id, reply);
+  } catch(e) {
+    updateMsg(id, 'Error connecting. Please try again.');
+  }
+}
+
+function appendMsg(role, content, id) {
+  const msgs = document.getElementById('chat-msgs');
+  const div = document.createElement('div');
+  div.className = 'msg ' + role;
+  if(id) div.id = id;
+  div.innerHTML = `<div class="msg-avatar">${role==='user'?'👤':'🪨'}</div><div class="msg-bubble">${content}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+function updateMsg(id, content) {
+  const el = document.getElementById(id);
+  if(el) el.querySelector('.msg-bubble').innerHTML = content.replace(/\n/g,'<br>');
+}
+
+// STATS & PROGRESS
+function updateHeaderStats() {
+  document.getElementById('stat-streak').textContent = currentStreak;
+  document.getElementById('stat-done').textContent = totalAnswered;
+  document.getElementById('stat-pct').textContent = totalAnswered ? Math.round(totalCorrect/totalAnswered*100)+'%' : '0%';
+}
+
+function renderProgress() {
+  const grid = document.getElementById('prog-grid');
+  grid.innerHTML = TOPICS.map(t => {
+    const s = topicStats[t.id];
+    const pct = s.answered ? Math.round(s.correct/s.answered*100) : 0;
+    return `<div class="prog-card">
+      <div class="prog-card-top"><span class="prog-card-name">${t.title}</span><span class="prog-card-pct">${pct}%</span></div>
+      <div class="prog-bar-bg"><div class="prog-bar-fg" style="width:${pct}%"></div></div>
+      <div class="prog-card-stats">${s.answered} answered · ${s.correct} correct</div>
+    </div>`;
+  }).join('');
+  document.getElementById('ob-score').textContent = totalAnswered ? Math.round(totalCorrect/totalAnswered*100)+'%' : '—';
+  document.getElementById('ob-answered').textContent = totalAnswered;
+  document.getElementById('ob-correct').textContent = totalCorrect;
+  document.getElementById('ob-streak').textContent = bestStreak;
+  renderBadges();
+}
+
+function renderBadges() {
+  const badges = [
+    {icon:'🌍', label:'First Steps', desc:'Answer your first question', earned: totalAnswered >= 1},
+    {icon:'⚡', label:'Streak x5', desc:'5 correct in a row', earned: bestStreak >= 5},
+    {icon:'🪨', label:'Rock Solid', desc:'Answer 50 questions', earned: totalAnswered >= 50},
+    {icon:'🌊', label:'Erosion Expert', desc:'Score 80%+ accuracy', earned: totalAnswered >= 10 && totalCorrect/totalAnswered >= 0.8},
+    {icon:'🏔️', label:'Geomorphologist', desc:'Answer 100 questions', earned: totalAnswered >= 100},
+    {icon:'🏅', label:'Master', desc:'Score 90%+ with 50+ questions', earned: totalAnswered >= 50 && totalCorrect/totalAnswered >= 0.9},
+  ];
+  document.getElementById('badges-grid').innerHTML = badges.map(b =>
+    `<div class="badge-chip ${b.earned?'earned':'locked'}">${b.icon} ${b.label}</div>`
+  ).join('');
+}
+
+function toggleDark() {
+  darkMode = !darkMode;
+  document.body.classList.toggle('dark', darkMode);
+  document.getElementById('dark-btn').textContent = darkMode ? '☀️ Light' : '🌙 Dark';
+}
+
+function resetProgress() {
+  if(!confirm('Reset all progress?')) return;
+  totalAnswered = 0; totalCorrect = 0; currentStreak = 0; bestStreak = 0;
+  TOPICS.forEach(t => topicStats[t.id] = {answered:0, correct:0});
+  updateHeaderStats();
+  renderProgress();
+}
+
+function shuffle(arr) {
+  for(let i=arr.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; }
+  return arr;
+}
+</script>
+</body>
+</html>
